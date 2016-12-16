@@ -1,0 +1,204 @@
+swagger: "2.0"
+
+info:
+  version: "0.0.1"
+  title: DemoBank app Android and iOS Backend
+  description: Try out Demo bank app to learn how to write Gherking automation scripts for Android and iOS apps
+
+  termsOfService: https://demo-bank.herokuapp.com/termsOfService
+  contact:
+    name: Caleb Repkes
+    url: https://www.calebrepkes.com
+    # email: empty@empty.com
+  license:
+    name: Caleb Repkes
+# during dev, should point to your local machine
+host: localhost:5001
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+  - application/x-www-form-urlencoded
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+  - application/x-www-form-urlencoded
+  - text/html
+paths:
+
+  /:
+    get:
+      x-swagger-router-controller: html
+      operationId: showIndex
+      summary: Show homepage
+      description: Show the homepage of Demo-bank App
+      responses:
+        "200":
+          $ref: '#/responses/StandardSuccesResponse'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+            
+  /app/login:
+    post:
+      x-swagger-router-controller: session
+      operationId: performLogin
+      summary: Login
+      description: Login to Demo-Bank App by providing a username and a password.
+      parameters:
+        - name: RequestLogin
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestLogin'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/LoginResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+            
+  /app/payment:
+    post:
+      x-swagger-router-controller: payment
+      operationId: performMakePayment
+      summary: Make a Payment
+      description: Make a payment.
+      parameters:
+        - name: RequestMakePayment
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestMakePayment'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccesResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+            
+  /app/logout:
+    post:
+      x-swagger-router-controller: session
+      operationId: performLogout
+      summary: Logout
+      description: Delete the session of the user
+      parameters:
+        - name: RequestLogout
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestLogout'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccesResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+          
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        fields:
+          type: string
+  StandardSuccess:
+    type: object
+    properties: 
+      service:
+        type: string
+      message:
+        type: string
+  RequestLogin:
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Username of user
+          example: test@test.com
+        password:
+          type: string
+          description: Password of user
+          example: test
+  RequestMakePayment:
+    description: blabla
+    type: object
+    required:
+    - payment_id
+    - own_account
+    - beneficiary
+    - amount
+    - token
+    properties:
+      payment_id:
+        type: string
+      own_account:
+        type: string
+      beneficiary:
+        type: string
+      amount:
+        type: number
+        format: float
+      token:
+        type: integer
+        format: int32
+  RequestLogout:
+    type: object
+    required:
+    - token
+    properties:
+      token:
+        type: string
+  LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+# complex routes have response definitions which can be re-used
+responses:
+  Standard500ErrorResponse:
+    description: An unexpected error occured
+    schema:
+      $ref: "#/definitions/Error"
+  StandardNotFoundResponse:
+    description: Record not found error
+    schema:
+      $ref: "#/definitions/Error"
+  StandardSuccesResponse:
+    description: A successfull response
+    schema:
+      $ref: "#/definitions/StandardSuccess"
