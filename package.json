@@ -1,7 +1,7 @@
 {
   "name": "demo-bank-heroku-backend",
   "version": "0.0.1",
-  "description": "Demo-bank app Android and iOS Heroku hosted backend",
+  "description": "Demo-bank app Android and iOS Heroku hosted backend.",
   "dependencies": {
     "async": "^2.1.4",
     "body-parser": "^1.0.2",
